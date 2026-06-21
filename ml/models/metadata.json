@@ -1,0 +1,25 @@
+{
+  "best_model_name": "Decision Tree",
+  "best_accuracy": 0.9983,
+  "needs_scaling": false,
+  "features": [
+    "length",
+    "uppercase_count",
+    "lowercase_count",
+    "digit_count",
+    "special_char_count",
+    "shannon_entropy",
+    "has_common_pattern",
+    "has_dictionary_word",
+    "consecutive_chars",
+    "char_diversity_ratio",
+    "keyboard_pattern"
+  ],
+  "all_results": {
+    "Decision Tree": 0.9983,
+    "Random Forest": 0.9967,
+    "Logistic Regression": 0.9933,
+    "Gradient Boosting": 0.9967,
+    "Neural Network": 0.9967
+  }
+}
