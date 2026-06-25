@@ -1,10 +1,10 @@
-import { useState, useEffect, useCallback } from "react";
-import axios from "axios";
+import { useState, useEffect } from "react";
 import PasswordInput from "./components/PasswordInput";
 import StrengthMeter from "./components/StrengthMeter";
 import FeatureBreakdown from "./components/FeatureBreakdown";
 import Suggestions from "./components/Suggestions";
 import ModelComparison from "./components/ModelComparison";
+import "./App.css";
 
 // Debounce helper — waits 300ms after typing stops before calling API
 function useDebounce(value, delay) {
@@ -32,11 +32,19 @@ export default function App() {
     }
 
     setLoading(true);
-    axios.post("http://localhost:8000/predict", {
-      password: debouncedPassword
+    fetch("http://localhost:8000/predict", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ password: debouncedPassword })
     })
     .then(res => {
-      setResult(res.data);
+      if (!res.ok) throw new Error("API Server error");
+      return res.json();
+    })
+    .then(data => {
+      setResult(data);
       setLoading(false);
     })
     .catch(err => {
@@ -46,64 +54,30 @@ export default function App() {
   }, [debouncedPassword]);
 
   const tabs = [
-    { id: "analyze",  label: "🔍 Analyze" },
-    { id: "models",   label: "🤖 Models" },
+    { id: "analyze",  label: "🔍 Analyze Strength" },
+    { id: "models",   label: "🤖 Model Insights" },
   ];
 
   return (
-    <div style={{
-      minHeight: "100vh",
-      background: "#0f0f1a",
-      padding: "40px 20px"
-    }}>
-      <div style={{
-        maxWidth: "800px",
-        margin: "0 auto"
-      }}>
+    <div className="app-container">
+      <div className="content-wrapper">
 
         {/* Header */}
-        <div style={{ textAlign: "center", marginBottom: "40px" }}>
-          <div style={{ fontSize: "48px", marginBottom: "12px" }}>🔐</div>
-          <h1 style={{
-            fontSize: "32px",
-            fontWeight: "800",
-            background: "linear-gradient(135deg, #6c63ff, #3ecfcf)",
-            WebkitBackgroundClip: "text",
-            WebkitTextFillColor: "transparent",
-            marginBottom: "8px"
-          }}>
-            Password Strength Predictor
-          </h1>
-          <p style={{ color: "#555", fontSize: "14px" }}>
-            AI-powered analysis using Machine Learning
+        <header className="app-header">
+          <div className="header-icon">🔐</div>
+          <h1 className="header-title">Password Strength Predictor</h1>
+          <p className="header-subtitle">
+            AI-powered analysis and strength assessment using Machine Learning
           </p>
-        </div>
+        </header>
 
         {/* Tabs */}
-        <div style={{
-          display: "flex",
-          gap: "8px",
-          marginBottom: "24px",
-          background: "#1a1a2e",
-          borderRadius: "12px",
-          padding: "6px"
-        }}>
+        <div className="tabs-container">
           {tabs.map(tab => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              style={{
-                flex: 1,
-                padding: "10px",
-                borderRadius: "8px",
-                border: "none",
-                cursor: "pointer",
-                fontSize: "14px",
-                fontWeight: "600",
-                background: activeTab === tab.id ? "#6c63ff" : "transparent",
-                color: activeTab === tab.id ? "#fff" : "#888",
-                transition: "all 0.2s"
-              }}
+              className={`tab-btn ${activeTab === tab.id ? "active" : ""}`}
             >
               {tab.label}
             </button>
@@ -120,13 +94,9 @@ export default function App() {
 
             {/* Loading indicator */}
             {loading && (
-              <div style={{
-                textAlign: "center",
-                color: "#6c63ff",
-                padding: "20px",
-                fontSize: "14px"
-              }}>
-                Analyzing...
+              <div className="loader-wrapper">
+                <div className="spinner-icon"></div>
+                <span>Analyzing password patterns...</span>
               </div>
             )}
 
@@ -147,15 +117,9 @@ export default function App() {
 
             {/* Empty state */}
             {!password && (
-              <div style={{
-                textAlign: "center",
-                padding: "60px 20px",
-                color: "#333"
-              }}>
-                <div style={{ fontSize: "48px", marginBottom: "16px" }}>
-                  ⌨️
-                </div>
-                <p>Start typing to analyze your password</p>
+              <div className="empty-state">
+                <div className="empty-state-icon">⌨️</div>
+                <p className="empty-state-text">Start typing a password to begin analysis</p>
               </div>
             )}
           </>
@@ -166,14 +130,9 @@ export default function App() {
         )}
 
         {/* Footer */}
-        <div style={{
-          textAlign: "center",
-          marginTop: "40px",
-          color: "#333",
-          fontSize: "12px"
-        }}>
-          Built with FastAPI + React + scikit-learn
-        </div>
+        <footer className="app-footer">
+          Built with FastAPI + React + Scikit-Learn
+        </footer>
       </div>
     </div>
   );

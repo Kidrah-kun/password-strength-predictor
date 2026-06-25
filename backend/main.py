@@ -59,9 +59,7 @@ with open(os.path.join(MODELS_DIR, 'best_model.pkl'), 'rb') as f:
 with open(os.path.join(MODELS_DIR, 'scaler.pkl'), 'rb') as f:
     scaler = pickle.load(f)
 
-# Load all model results for comparison endpoint
-import pandas as pd
-results_df = pd.read_csv(os.path.join(MODELS_DIR, 'model_results.csv'))
+# Load all model results for comparison endpoint (Pandas removed to reduce startup overhead)
 
 print(f"✅ Loaded model: {metadata['best_model_name']}")
 print(f"   Accuracy: {metadata['best_accuracy'] * 100:.2f}%")

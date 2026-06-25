@@ -48,7 +48,7 @@ export default function FeatureBreakdown({ features }) {
       value: features.shannon_entropy,
       good: features.shannon_entropy >= 3.5,
       ok: features.shannon_entropy >= 2.5,
-      display: features.shannon_entropy.toFixed(2)
+      display: typeof features.shannon_entropy === 'number' ? features.shannon_entropy.toFixed(2) : "0.00"
     },
     {
       key: "char_diversity_ratio",
@@ -56,7 +56,7 @@ export default function FeatureBreakdown({ features }) {
       value: features.char_diversity_ratio,
       good: features.char_diversity_ratio >= 0.7,
       ok: features.char_diversity_ratio >= 0.5,
-      display: `${(features.char_diversity_ratio * 100).toFixed(0)}%`
+      display: typeof features.char_diversity_ratio === 'number' ? `${(features.char_diversity_ratio * 100).toFixed(0)}%` : "0%"
     },
     {
       key: "has_common_pattern",
@@ -64,7 +64,7 @@ export default function FeatureBreakdown({ features }) {
       value: features.has_common_pattern,
       good: features.has_common_pattern === 0,
       ok: features.has_common_pattern === 0,
-      display: features.has_common_pattern ? "Detected ⚠️" : "None ✓"
+      display: features.has_common_pattern ? "Detected" : "None"
     },
     {
       key: "has_dictionary_word",
@@ -72,7 +72,7 @@ export default function FeatureBreakdown({ features }) {
       value: features.has_dictionary_word,
       good: features.has_dictionary_word === 0,
       ok: features.has_dictionary_word === 0,
-      display: features.has_dictionary_word ? "Detected ⚠️" : "None ✓"
+      display: features.has_dictionary_word ? "Detected" : "None"
     },
     {
       key: "keyboard_pattern",
@@ -80,7 +80,7 @@ export default function FeatureBreakdown({ features }) {
       value: features.keyboard_pattern,
       good: features.keyboard_pattern === 0,
       ok: features.keyboard_pattern === 0,
-      display: features.keyboard_pattern ? "Detected ⚠️" : "None ✓"
+      display: features.keyboard_pattern ? "Detected" : "None"
     },
     {
       key: "consecutive_chars",
@@ -105,65 +105,23 @@ export default function FeatureBreakdown({ features }) {
   };
 
   return (
-    <div style={{
-      background: "#1a1a2e",
-      borderRadius: "16px",
-      padding: "32px",
-      marginBottom: "24px",
-      border: "1px solid #2a2a4a"
-    }}>
-      <h2 style={{
-        fontSize: "14px",
-        color: "#888",
-        textTransform: "uppercase",
-        letterSpacing: "2px",
-        marginBottom: "20px"
-      }}>
-        Feature Breakdown
-      </h2>
+    <div className="glass-card">
+      <h2 className="card-title">Feature Breakdown</h2>
 
-      <div style={{
-        display: "grid",
-        gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))",
-        gap: "12px"
-      }}>
+      <div className="features-grid">
         {items.map(item => (
           <div
             key={item.key}
-            style={{
-              background: "#0f0f1a",
-              borderRadius: "12px",
-              padding: "16px",
-              border: `1px solid ${getColor(item)}33`,
-              transition: "all 0.3s"
-            }}
+            className="feature-badge"
+            style={{ borderBottom: `3px solid ${getColor(item)}` }}
           >
-            <div style={{
-              fontSize: "11px",
-              color: "#888",
-              textTransform: "uppercase",
-              letterSpacing: "1px",
-              marginBottom: "8px"
-            }}>
-              {item.label}
-            </div>
-            <div style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between"
-            }}>
-              <span style={{
-                fontSize: "18px",
-                fontWeight: "bold",
-                color: "#fff"
-              }}>
-                {item.display}
-              </span>
-              <span style={{
-                fontSize: "16px",
-                color: getColor(item),
-                fontWeight: "bold"
-              }}>
+            <span className="feature-label">{item.label}</span>
+            <div className="feature-value-wrapper">
+              <span className="feature-value">{item.display}</span>
+              <span 
+                className="feature-status-icon"
+                style={{ color: getColor(item) }}
+              >
                 {getIcon(item)}
               </span>
             </div>

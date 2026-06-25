@@ -1,81 +1,72 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
 
 export default function ModelComparison() {
   const [models, setModels] = useState(null);
 
   useEffect(() => {
-    axios.get("http://localhost:8000/models")
-      .then(res => setModels(res.data))
+    fetch("http://localhost:8000/models")
+      .then(res => {
+        if (!res.ok) throw new Error("API Server error");
+        return res.json();
+      })
+      .then(data => setModels(data))
       .catch(err => console.error(err));
   }, []);
 
-  if (!models) return null;
+  if (!models) {
+    return (
+      <div className="loader-wrapper">
+        <div className="spinner-icon"></div>
+        <span>Loading model performance data...</span>
+      </div>
+    );
+  }
 
   const sorted = Object.entries(models.all_models)
     .sort((a, b) => b[1] - a[1]);
 
-  const colors = ["#6c63ff", "#2ecc71", "#3498db", "#f39c12", "#e74c3c"];
+  const colors = ["#6366f1", "#10b981", "#3b82f6", "#f59e0b", "#ef4444"];
 
   return (
-    <div style={{
-      background: "#1a1a2e",
-      borderRadius: "16px",
-      padding: "32px",
-      marginBottom: "24px",
-      border: "1px solid #2a2a4a"
-    }}>
-      <h2 style={{
-        fontSize: "14px",
-        color: "#888",
-        textTransform: "uppercase",
-        letterSpacing: "2px",
-        marginBottom: "8px"
-      }}>
-        Model Comparison
-      </h2>
+    <div className="glass-card">
+      <h2 className="card-title">Model Insights</h2>
+      
       <p style={{
-        fontSize: "12px",
-        color: "#555",
-        marginBottom: "20px"
+        fontSize: "14px",
+        color: "#9ca3af",
+        marginBottom: "24px",
+        fontWeight: 500
       }}>
-        Currently using: <span style={{ color: "#6c63ff" }}>
+        Currently using: <span style={{ color: "#818cf8", fontWeight: 700 }}>
           {models.best_model}
         </span>
       </p>
 
-      <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+      <div className="metrics-list">
         {sorted.map(([name, acc], i) => (
-          <div key={name}>
-            <div style={{
-              display: "flex",
-              justifyContent: "space-between",
-              fontSize: "13px",
-              marginBottom: "6px"
-            }}>
+          <div key={name} className="metric-row">
+            <div className="metric-header" style={{ fontSize: "14px", marginBottom: "2px" }}>
               <span style={{
-                color: name === models.best_model ? "#6c63ff" : "#aaa",
-                fontWeight: name === models.best_model ? "bold" : "normal"
+                color: name === models.best_model ? "#fff" : "#9ca3af",
+                fontWeight: name === models.best_model ? "700" : "500"
               }}>
                 {name === models.best_model ? "🏆 " : ""}{name}
               </span>
-              <span style={{ color: colors[i] }}>
-                {(acc * 100).toFixed(2)}%
+              <span style={{ color: colors[i % colors.length], fontWeight: 700 }}>
+                {(acc * 100).toFixed(2)}% Accuracy
               </span>
             </div>
-            <div style={{
-              background: "#0f0f1a",
-              borderRadius: "999px",
-              height: "8px",
-              overflow: "hidden"
-            }}>
-              <div style={{
-                width: `${acc * 100}%`,
-                height: "100%",
-                background: colors[i],
-                borderRadius: "999px",
-                transition: "width 0.6s ease"
-              }} />
+            
+            <div className="metric-track" style={{ height: "10px" }}>
+              <div 
+                className="metric-fill" 
+                style={{ 
+                  width: `${acc * 100}%`, 
+                  background: name === models.best_model 
+                    ? `linear-gradient(90deg, #6366f1, #818cf8)` 
+                    : colors[i % colors.length]
+                }} 
+              />
             </div>
           </div>
         ))}

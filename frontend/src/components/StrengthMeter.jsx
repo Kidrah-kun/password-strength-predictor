@@ -17,95 +17,66 @@ export default function StrengthMeter({ result, password }) {
     return "⚪";
   };
 
-  return (
-    <div style={{
-      background: "#1a1a2e",
-      borderRadius: "16px",
-      padding: "32px",
-      marginBottom: "24px",
-      border: "1px solid #2a2a4a"
-    }}>
-      <h2 style={{
-        fontSize: "14px",
-        color: "#888",
-        textTransform: "uppercase",
-        letterSpacing: "2px",
-        marginBottom: "20px"
-      }}>
-        Strength Analysis
-      </h2>
+  // Convert hex color to rgba for styling border/subtle glow
+  const getSubtleColor = (hex) => {
+    if (!hex) return "rgba(255, 255, 255, 0.05)";
+    // simple mapping or generic conversion
+    if (hex === "#e74c3c") return "rgba(231, 76, 60, 0.15)";
+    if (hex === "#f39c12") return "rgba(243, 156, 18, 0.15)";
+    if (hex === "#2ecc71") return "rgba(46, 204, 113, 0.15)";
+    return "rgba(255, 255, 255, 0.05)";
+  };
 
-      {/* Big label */}
-      <div style={{
-        display: "flex",
-        alignItems: "center",
-        gap: "12px",
-        marginBottom: "20px"
-      }}>
-        <span style={{ fontSize: "32px" }}>{getEmoji()}</span>
+  return (
+    <div className="glass-card" style={{ borderLeft: `5px solid ${color}` }}>
+      <h2 className="card-title">Strength Analysis</h2>
+
+      {/* Strength Summary */}
+      <div className="strength-summary">
+        <span className="strength-emoji">{getEmoji()}</span>
         <div>
-          <div style={{
-            fontSize: "36px",
-            fontWeight: "bold",
-            color: color
-          }}>
+          <div className="strength-label" style={{ color: color }}>
             {label}
           </div>
-          <div style={{ fontSize: "14px", color: "#888" }}>
-            {confidence}% confidence
+          <div className="confidence-text">
+            {confidence}% prediction confidence
           </div>
         </div>
       </div>
 
-      {/* Animated strength bar */}
-      <div style={{
-        background: "#0f0f1a",
-        borderRadius: "999px",
-        height: "12px",
-        overflow: "hidden",
-        marginBottom: "24px"
-      }}>
-        <div style={{
-          width: getBarWidth(),
-          height: "100%",
-          background: `linear-gradient(90deg, ${color}88, ${color})`,
-          borderRadius: "999px",
-          transition: "width 0.5s ease, background 0.5s ease"
-        }} />
+      {/* Main progress bar */}
+      <div className="progress-container">
+        <div 
+          className="progress-bar-fill" 
+          style={{ 
+            width: getBarWidth(),
+            background: `linear-gradient(90deg, ${color}cc, ${color})`,
+            boxShadow: `0 0 10px ${color}66`
+          }} 
+        />
       </div>
 
-      {/* Probability bars for all 3 classes */}
+      {/* Probability breakdowns */}
       {all_probs && (
-        <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+        <div className="metrics-list">
           {[
-            { name: "Weak",   color: "#e74c3c", prob: all_probs.Weak },
-            { name: "Medium", color: "#f39c12", prob: all_probs.Medium },
-            { name: "Strong", color: "#2ecc71", prob: all_probs.Strong },
+            { name: "Weak Probability",   color: "#e74c3c", prob: all_probs.Weak },
+            { name: "Medium Probability", color: "#f39c12", prob: all_probs.Medium },
+            { name: "Strong Probability", color: "#2ecc71", prob: all_probs.Strong },
           ].map(({ name, color: c, prob }) => (
-            <div key={name}>
-              <div style={{
-                display: "flex",
-                justifyContent: "space-between",
-                fontSize: "12px",
-                color: "#888",
-                marginBottom: "4px"
-              }}>
+            <div key={name} className="metric-row">
+              <div className="metric-header">
                 <span>{name}</span>
-                <span>{prob}%</span>
+                <span style={{ color: c, fontWeight: 700 }}>{prob}%</span>
               </div>
-              <div style={{
-                background: "#0f0f1a",
-                borderRadius: "999px",
-                height: "6px",
-                overflow: "hidden"
-              }}>
-                <div style={{
-                  width: `${prob}%`,
-                  height: "100%",
-                  background: c,
-                  borderRadius: "999px",
-                  transition: "width 0.4s ease"
-                }} />
+              <div className="metric-track">
+                <div 
+                  className="metric-fill" 
+                  style={{ 
+                    width: `${prob}%`, 
+                    background: c 
+                  }} 
+                />
               </div>
             </div>
           ))}
