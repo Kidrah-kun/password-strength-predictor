@@ -1,6 +1,5 @@
-# Create .gitignore in root folder
-echo "venv/
+venv/
 __pycache__/
 *.pyc
 .DS_Store
-models/*.pkl" > .gitignore
+models/*.pkl
